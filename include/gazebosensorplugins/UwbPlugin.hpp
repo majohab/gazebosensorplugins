@@ -636,60 +636,60 @@ namespace gazebosensorplugins
             NLOS_H
         };
         
-    public:
-        /**
-         * @brief Construct a new Uwb Plugin object
-         * 
-         */
-        UwbPlugin();
-        /**
-         * @brief load function
-         * 
-         * @param _parent 
-         * @param _sdf 
-         */
-        void Load(gazebo::physics::ModelPtr _parent, sdf::ElementPtr _sdf);
-        /**
-         * @brief update function
-         * 
-         */
-        void OnUpdate(const gazebo::common::UpdateInfo &_info);
-        /**
-         * @brief Set the Update Rate object
-         * 
-         * @param _rate 
-         */
-        void SetUpdateRate(double _rate);
-        /**
-         * @brief reset function
-         * 
-         */
-        void Reset() override;
-
-    private:
-        gazebo::physics::ModelPtr model;
-        gazebo::physics::WorldPtr world;
-        gazebo::physics::RayShapePtr firstRay;
-        gazebo::physics::RayShapePtr secondRay;
-        gazebo::event::ConnectionPtr updateConnection;
-        gazebo::common::Time updatePeriod;
-        gazebo::common::Time lastUpdateTime;
-        double tagZOffset;
-        std::string anchorPrefix;
-        gazebo::physics::LinkPtr tagLink;
-        /// A pointer to the GazeboROS node.
-        gazebo_ros::Node::SharedPtr ros_node_;
-        rclcpp::Publisher<gtec_msgs::msg::Ranging>::SharedPtr gtecUwbPub;
-        rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr gtecAnchors;
-        unsigned char sequence;
-        double nlosSoftWallWidth;
-        double maxDBDistance;
-        double stepDBDistance;
-        bool allBeaconsAreLOS;
-        int tagId;
-        bool useParentAsReference;
-        std::default_random_engine random_generator;
-
+        public:
+            /**
+             * @brief Construct a new Uwb Plugin object
+             * 
+             */
+            UwbPlugin();
+            /**
+             * @brief load function
+             * 
+             * @param _parent 
+             * @param _sdf  
+             */
+            void Load(gazebo::physics::ModelPtr _parent, sdf::ElementPtr _sdf);
+            /**
+             * @brief update function
+             * 
+             */
+            void Update(const gazebo::common::UpdateInfo &_info);
+            /**
+             * @brief Set the Update Rate object
+             * 
+             * @param _rate 
+             */
+            void SetUpdateRate(double _rate);
+            /**
+             * @brief reset function
+             * 
+             */
+            void Reset() override;
+    
+        private:
+            gazebo::physics::ModelPtr model;
+            gazebo::physics::WorldPtr world;
+            gazebo::physics::RayShapePtr firstRay;
+            gazebo::physics::RayShapePtr secondRay;
+            gazebo::event::ConnectionPtr updateConnection;
+            gazebo::common::Time updatePeriod;
+            gazebo::common::Time lastUpdateTime;
+            double tagZOffset;
+            std::string anchorPrefix;
+            gazebo::physics::LinkPtr tagLink;
+            /// A pointer to the GazeboROS node.
+            gazebo_ros::Node::SharedPtr ros_node_;
+            rclcpp::Publisher<gtec_msgs::msg::Ranging>::SharedPtr gtecUwbPub;
+            rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr gtecAnchors;
+            unsigned char sequence;
+            double nlosSoftWallWidth;
+            double maxDBDistance;
+            double stepDBDistance;
+            bool allBeaconsAreLOS;
+            int tagId;
+            bool useParentAsReference;
+            std::default_random_engine random_generator;
+    
     };
 
 

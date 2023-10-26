@@ -4,7 +4,6 @@ namespace gazebosensorplugins
 {
 
     UwbPlugin::UwbPlugin() :
-            ModelPlugin(),
             sequence(0)
     {
         this->updatePeriod = gazebo::common::Time(0.0);
@@ -23,7 +22,7 @@ namespace gazebosensorplugins
         }
 
         this->ros_node_ = gazebo_ros::Node::Get(_sdf);
-        RCLCPP_INFO(ros_node_->get_logger(), "Loading Boldbot Gazebo Plugin");
+        RCLCPP_INFO(ros_node_->get_logger(), "Loading UWB Plugin");
 
         this->model = _parent;
         this->world = _parent->GetWorld();
@@ -110,10 +109,10 @@ namespace gazebosensorplugins
                               this->world->Physics()->CreateShape("ray", gazebo::physics::CollisionPtr()));
 
         this->updateConnection =
-            gazebo::event::Events::ConnectWorldUpdateBegin(boost::bind(&UwbPlugin::OnUpdate, this, _1));
+            gazebo::event::Events::ConnectWorldUpdateBegin(boost::bind(&UwbPlugin::Update, this, _1));
     }
 
-    void UwbPlugin::OnUpdate(const gazebo::common::UpdateInfo &_info)
+    void UwbPlugin::Update(const gazebo::common::UpdateInfo &_info)
     {
         gazebo::common::Time simTime = _info.simTime;
         gazebo::common::Time elapsed = simTime - this->lastUpdateTime;
@@ -373,7 +372,7 @@ namespace gazebosensorplugins
                         }
                     }
                     visualization_msgs::msg::Marker marker;
-                    marker.header.frame_id = "world";
+                    marker.header.frame_id = "odom";
                     marker.header.stamp = this->ros_node_->get_clock()->now();
                     marker.id = aid;
                     marker.type = visualization_msgs::msg::Marker::CYLINDER;
