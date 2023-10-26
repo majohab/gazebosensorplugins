@@ -80,5 +80,3 @@ This plugin publish the next topics:
 
 - ```/gtec/gazebo/uwb/anchors/tag_id``` : where ```tag_id``` is the value configured in the plugins. This topic publish the position of the UWB anchors in the scenario. Each anchor have a different color depending of its current LOS mode: green-LOS, yellow-NLOS Soft, blue-NLOS Hard and red-NLOS. The published messages are of type visualization_msgs/MarkerArray.msg ([visualization_msgs/MarkerArray Message](http://docs.ros.org/melodic/api/visualization_msgs/html/msg/MarkerArray.html))
 
-
-

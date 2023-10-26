@@ -1,52 +1,73 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.8)
 project(gazebosensorplugins)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++11")
-
-
-add_definitions(-std=c++11)
-
-
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  gazebo_ros
-  roscpp
-  std_msgs
-  gtec_msgs
-  tf
-)
-
-# Depend on system install of Gazebo
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_ros REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(gazebo_ros REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(gtec_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
+find_package(tf2 REQUIRED)
 find_package(gazebo REQUIRED)
 
-link_directories(${GAZEBO_LIBRARY_DIRS})
-include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
-
-add_library(gtec_uwb_plugin src/UwbPlugin.cpp)
-target_link_libraries(gtec_uwb_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-add_dependencies(gtec_uwb_plugin ${catkin_EXPORTED_TARGETS})
-
-add_library(gtec_magnetic_distortion_plugin src/MagneticDistortionPlugin.cpp)
-target_link_libraries(gtec_magnetic_distortion_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-add_dependencies(gtec_magnetic_distortion_plugin ${catkin_EXPORTED_TARGETS})
-
-add_library(custom_skid_steer_drive src/CustomSkidSteerDrive.cpp src/CustomSkidSteerDrive.h)
-target_link_libraries(custom_skid_steer_drive ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-add_dependencies(custom_skid_steer_drive ${catkin_EXPORTED_TARGETS})
-
-add_library(gtec_tag_pos_publisher_plugin src/TagPosPublisherPlugin.cpp)
-target_link_libraries(gtec_tag_pos_publisher_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
-add_dependencies(gtec_tag_pos_publisher_plugin ${catkin_EXPORTED_TARGETS})
-
-catkin_package(
-  DEPENDS 
-    roscpp 
-    gazebo_ros
-    gtec_msgs
+add_library(gazebosensorplugins src/UwbPlugin.cpp)
+add_library(gazebosensorplugins::gazebosensorplugins ALIAS gazebosensorplugins)
+target_compile_features(gazebosensorplugins PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_include_directories(gazebosensorplugins PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+ament_target_dependencies(
+  gazebosensorplugins
+  "rclcpp"
+  "gazebo_ros"
+  "std_msgs"
+  "gtec_msgs"
+  "tf2"
+  "gazebo"
+  "visualization_msgs"
 )
-##add_dependencies(${PROJECT_NAME} gtec_generate_messages_cpp)
+
+
+# Causes the visibility macros to use dllexport rather than dllimport,
+# which is appropriate when building the dll but not consuming it.
+target_compile_definitions(gazebosensorplugins PRIVATE "GAZEBOSENSORPLUGINS_BUILDING_LIBRARY")
+
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+install(
+  TARGETS gazebosensorplugins
+  EXPORT export_${PROJECT_NAME}
+  DESTINATION share/${PROJECT_NAME}
+)
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # the following line skips the linter which checks for copyrights
+  # comment the line when a copyright and license is added to all source files
+  set(ament_cmake_copyright_FOUND TRUE)
+  # the following line skips cpplint (only works in a git repo)
+  # comment the line when this package is in a git repo and when
+  # a copyright and license is added to all source files
+  set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_export_include_directories(
+  include
+)
+ament_export_libraries(
+  gazebosensorplugins
+)
+ament_export_targets(
+  export_${PROJECT_NAME}
+)
+
+ament_package()
